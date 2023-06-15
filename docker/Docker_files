@@ -1,5 +1,6 @@
-# Build a web development program 
-FROM node:14                          #base image
+# Build a web development program
+
+FROM node:14  as builder              #base image
 WORKDIR /app                          #creating a working directory in the container as /app
 COPY package.json ./                  #copy the package.json file to the host (./)
 RUN npm install                       #It installs the dependencies listed in the package.json file into the container's filesystem. 
@@ -9,3 +10,14 @@ COPY . .                              #copy all the files and directory from hos
 
 RUN npm build                         #It executes the build process specified in the scripts section of the package.json file. 
                                       #The build process could involve tasks such as transpiling code, bundling assets, optimizing resources, and creating the production-ready code.
+
+#Create the production-ready image
+
+
+
+FROM nginx:latest                                                      # base image nginx
+COPY --from=builder /app/dist /usr/share/nginx/html                 #--from=builder here the flag represent the privious build( as builder) here we take information from the /app and adding the to nginux server /user/share/html
+COPY nginx.conf /etc/nginx/nginx.conf                               # copy nginx.conf file to nginx container 
+EXPOSE 80                                                           #listen on port80
+CMD ["nginx" , "g", "daemon off;"]                                  #command to run when the container starts. It starts the NGINX server within the container with the "nginx" command and passes the -g "daemon off;" option. 
+                                                                    #This option prevents NGINX from running in the background and keeps the container running as the main process.
