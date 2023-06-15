@@ -1,2 +1,11 @@
-Form:install ngnix:latest
-Run:
+# Build a web development program 
+FROM node:14                          #base image
+WORKDIR /app                          #creating a working directory in the container as /app
+COPY package.json ./                  #copy the package.json file to the host (./)
+RUN npm install                       #It installs the dependencies listed in the package.json file into the container's filesystem. 
+                                      #This step ensures that all necessary dependencies are available for building the application.
+                                      
+COPY . .                              #copy all the files and directory from host to working directory(/app)  
+
+RUN npm build                         #It executes the build process specified in the scripts section of the package.json file. 
+                                      #The build process could involve tasks such as transpiling code, bundling assets, optimizing resources, and creating the production-ready code.
