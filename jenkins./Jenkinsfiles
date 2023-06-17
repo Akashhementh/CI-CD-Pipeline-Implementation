@@ -1,1 +1,28 @@
+apiVersion: apps/v1                              #Specifies the version of the Kubernetes API being used (apps/v1 in this case).
+kind: Deployment                                 #kind: Specifies the type of Kubernetes resource (Deployment, services).
+metadata:                                        #metadata: holds the information about the resouces such as name of the deployment
+    name: myapp-deployment                       #name: providing a name for the deployment
+spec:                                            #spec: desired state of the deployment  include replicas, selectors, template.
+    replicas: 3                                  #replicas: the replicas are the set of duplicate of the deployment
+    selectors:                                   #selectors: Defines the labels used to select the pods controlled by this deployment
+        matchlables:                             #matchlabels: connections B/w services or pods
+            app: myapp                           #app: name of the connection
+    template:                                    #template: Defines the pod template used to create new pods for the deployment.
+        metadata:                                #metadata: metadata: Contains metadata information for the pods created from this template.
+            labels:
+                app: myapp
+        spec:
+            containers:
+                - name: myapp-container
+                  image: myapp:latest
+                  port:
+                   -containerPort: 8000
+---
+apiVersion: myapp/v1
+kind: services
+metadata: 
+    name: myapp-service
+spec:
+    replicas: 
+    selectors:
 
