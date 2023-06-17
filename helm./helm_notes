@@ -1,0 +1,92 @@
+What is helm ?
+what are helm charts?
+How to use them?
+whatis tiller?
+
+helm: package manager for kubernetes to package yaml files and distribute them in public and private repositories 
+helm charts: 
+  -bundle of YAML fles
+  -create your own helm charts with helm
+  -push them to helm Repository
+  -Download and use Existing ones
+  
+  ================================     so you reuse that configation files       ======================================
+  
+  1> SHARING HEM CHARTS:-
+                    [   helm search <KEYWORD> ]
+             KEYWORD: this is the name of the yaml file
+                     : this search can take place in the search od helm hub(public )
+                     :  or the company repository (private)
+                     
+                     
+ 2>  TEMPLATING ENGINE :-
+                       : WE have to deploy 50 + microservice and the deployment and serivce configration  almost the same 
+                       
+                       1> define a common blue print 
+                       2> dymmamic values are replaced by place holders {}  ( {{.values}})
+                       
+          TEMPLATE YAML SERVICE CONFIGURATION
+          
+          apiVersion: v1
+          kind: deployment
+          metadata:
+            name: {{.values}}
+          spec:
+            - container:
+               name: {{.values}}
+               image: {{.values}}
+               port: {{.values}}
+                                     == The additional values for the above CONFIGURATION will come from " value.yaml " ==
+                                                        
+                                                                  name: my_app
+                                                               spec:
+                                                                - container:
+                                                                    name: my_app_container
+                                                                    image: my_app_image
+                                                                    port: 9001
+                                                                    
+  == the value can be added either by " values.yaml " or " -- set" flag ==
+   --set :
+                                  
+            [   helm install <release-name> <chart-name> --set <parameter1=value1> --set <parameter2=value2> ... ]
+            
+   <release-name>            ---> name that you want to display
+   <chart-name>              ---> name that is saved in Helm chart
+   < parameters = values>    --->  specification of name (replicas, name, ports) and it values
+   
+           [   helm install my-release my-chart --set replicaCount=3 ]
+           [   helm install my-realease my-chart --set replicaCount=3 --set image.tag= v1.19.5 --set .... ]
+           
+    == this type of tempate Engine is practiclly used during CI/CD. tn your Build you can replace the values on the fly ==
+    == Another use case for helm feature " same application in different Envirnoment" ==
+    
+    
+3> HELM CHART STRUCTURE :- ( INSIDE THE HELM WE SHOULD NOT DUMP THE CONFIG FILES)
+    The structure of a Helm chart follows a specific directory layout and contains various files that define and configure the deployment of an application. 
+    Here is a typical structure of a Helm chart:
+                
+                
+my-chart/                ---> TOP LEVEL MYCHART FOLDER (name of the chart)  
+  ├── Chart.yaml                     ------------>  Chart.yaml: This file contains metadata about the chart, including the chart name, version, description, maintainer information, dependencies, and other optional fields.
+  ├── values.yaml                    ------------>  values.yaml: This file defines the default values for the chart's parameters. It provides a central place to configure the deployment settings, making it easier to customize the chart's behavior.
+  ├── charts/                        ------------>  charts/ (directory): This directory is used to store any sub-charts or dependencies that the main chart requires. Sub-charts are reusable components that can be included within a parent chart.
+  ├── templates/                     ------------>  templates/ (directory): This directory contains the Kubernetes manifest files written in YAML or JSON, which define the resources to be deployed. 
+      |-                                            These files can include Deployment, Service, ConfigMap, Ingress, and other Kubernetes resource definitions. Templating language (such as Go templates) can be used within these files to dynamically generate configuration based on the provided values.
+  │   ├── deployment.yaml
+  │   ├── service.yaml
+  │   ├── ingress.yaml
+  │   └── ...
+  └── ...
+                                    ====  Other directories and files:
+                                    There might be additional directories and files within the chart, such as tests/ for test-related files, LICENSE for license information, or README.md for documentation.
+
+                                     
+                                  
+                                     
+                                    
+                                                                  
+             
+          
+      
+          
+ 
