@@ -1,3 +1,5 @@
+# ** Deployment**
+
 apiVersion: apps/v1                              #Specifies the version of the Kubernetes API being used (apps/v1 in this case).
 kind: Deployment                                 #kind: Specifies the type of Kubernetes resource (Deployment, services).
 metadata:                                        #metadata: holds the information about the resouces such as name of the deployment
@@ -5,24 +7,31 @@ metadata:                                        #metadata: holds the informatio
 spec:                                            #spec: desired state of the deployment  include replicas, selectors, template.
     replicas: 3                                  #replicas: the replicas are the set of duplicate of the deployment
     selectors:                                   #selectors: Defines the labels used to select the pods controlled by this deployment
-        matchlables:                             #matchlabels: connections B/w services or pods
-            app: myapp                           #app: name of the connection
+        matchlables:                             #matchlabels: connections B/w deployment and pods
+            app: myapp                           #app: name of the connection to pod 
     template:                                    #template: Defines the pod template used to create new pods for the deployment.
         metadata:                                #metadata: metadata: Contains metadata information for the pods created from this template.
-            labels:
+            labels:                              #lables:"Labels" in Kubernetes are key-value pairs attached to objects (such as pods, services, deployments)
                 app: myapp
-        spec:
-            containers:
-                - name: myapp-container
-                  image: myapp:latest
-                  port:
-                   -containerPort: 8000
+        spec:                                    #spec: Defines the pod specification, including the container(s) running in the pod.
+            containers:                          #containers: Defines the container(s) to be run in the pod.
+                - name: myapp-container          # name: define the containes(s) name to be added
+                  image: myapp:latest            #image: Specifies the container image to be used.
+                  ports:                         #ports: Specifies the ports to be exposed by the container.
+                   -containerPort: 8000          #containerPort: on which port the container is running (for the host to connect to the pod)
+                   
+                   
 ---
-apiVersion: myapp/v1
-kind: services
-metadata: 
-    name: myapp-service
-spec:
-    replicas: 
-    selectors:
+# *service*                                     #adding the services to the deployment.yaml file above
 
+apiVersion: myapp/v1                            #apiVersion: Specifies the version of the Kubernetes API being used (v1 in this case).
+kind: services                                  #kind: Specifies the type of Kubernetes resource (Service).
+metadata:                                       #metadata: Contains metadata information for the resource, such as the name of the service.
+    name: myapp-service                         #name: name to the services that we are integrating to the deployment
+spec:                                           #spec: Defines the desired state of the service.
+    selector:                                   #selector: Defines the labels used to select the pods that the service will route traffic to.
+        app: myapp
+    ports:                                      #ports: Specifies the ports to be exposed by the service.
+        -protocol: tcp                          #protocol: Specifies the protocol for the port (TCP in this example).
+             port: 80                           #port: Specifies the port number for the service.
+             targetPort: 80                     #targetPort: Specifies the target port on the pods to forward traffic to.
